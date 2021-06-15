@@ -1,6 +1,12 @@
 //creating a simple server
 const express = require("express");
 const app = express();
+const movies = [
+    { title: 'Jaws', year: 1975, rating: 8 },
+    { title: 'Avatar', year: 2009, rating: 7.8 },
+    { title: 'Brazil', year: 1985, rating: 8 },
+    { title: 'الإرهاب والكباب‎', year: 1992, rating: 6.2 }
+]
 
 app.get("/", (req, res) => {
     res.send("ok");
@@ -22,13 +28,13 @@ app.get("/time", (req, res) => {
         status: 200,
         message: hour + ":" + minute,
     })
-})
+});
 app.get("/hello/:id(\\d+)", (req, res) => {
     res.send({
         status: 200,
         message: "Hello " + req.params.id,
     })
-})
+});
 app.get("/search", (req, res) => {
     const search = req.query.s;
     if (search) {
@@ -44,5 +50,21 @@ app.get("/search", (req, res) => {
             message: "you have to provide a search",
         })
     }
-})
+});
+
+app.get("/movies/create", (req, res) => {
+    res.send("create movies")
+});
+app.get("/movies/read", (req, res) => {
+    res.send({
+        status: 200,
+        data: movies,
+    })
+});
+app.get("/movies/update", (req, res) => {
+    res.send("update movies")
+});
+app.get("/movies/delete", (req, res) => {
+    res.send("delete movies")
+});
 app.listen(3000);
