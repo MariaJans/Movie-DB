@@ -94,5 +94,20 @@ app.get("/movies/read/by-title", (req, res) => {
         data: sortbytitle,
     })
 });
+app.get("/movies/read/id/:id(\\d+)", (req, res) => {
+    if (!movies[req.params.id - 1]) {
+        res.status(404);
+        res.send({
+            status: 404,
+            error: true,
+            message: "The movie " + req.params.id + " does not exist"
+        })
+    } else {
+        res.send({
+            status: 200,
+            data: movies[req.params.id - 1],
+        })
+    }
+});
 app.listen(3000);
 
