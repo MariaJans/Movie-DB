@@ -132,6 +132,21 @@ app.get("/movies/add", (req, res) => {
             data: movies,
         })
     }
-})
+});
+app.get("/movies/delete/:id(\\d+)", (req, res) => {
+    if (!movies[req.params.id - 1]) {
+        res.send({
+            status: 404,
+            error: true,
+            message: "the movie " + req.params.id + " does not exist"
+        })
+    } else {
+        movies.splice(req.params.id - 1, 1);
+        res.send({
+            status: 200,
+            data: movies,
+        })
+    }
+});
 app.listen(3000);
 
