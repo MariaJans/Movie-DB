@@ -109,5 +109,29 @@ app.get("/movies/read/id/:id(\\d+)", (req, res) => {
         })
     }
 });
+app.get("/movies/add", (req, res) => {
+    const title = req.query.title;
+    const year = req.query.year;
+    const rating = req.query.rating;
+    if (title === "" || year === "" || isNaN(year) || year.length != 4) {
+        res.send({
+            status: 403,
+            error: true,
+            message: "you cannot create a movie without providing a title and a year",
+        })
+    } else if (rating === "") {
+        movies.push({ title: title, year: year, rating: 4 })
+        res.send({
+            status: 200,
+            data: movies,
+        })
+    } else {
+        movies.push({ title: title, year: year, rating: rating })
+        res.send({
+            status: 200,
+            data: movies,
+        })
+    }
+})
 app.listen(3000);
 
