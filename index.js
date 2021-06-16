@@ -67,4 +67,32 @@ app.get("/movies/update", (req, res) => {
 app.get("/movies/delete", (req, res) => {
     res.send("delete movies")
 });
+app.get("/movies/read/by-date", (req, res) => {
+    const sortbyyear = movies.slice().sort((a, b) => a.year - b.year)
+    res.send({
+        status: 200,
+        data: sortbyyear,
+    })
+});
+app.get("/movies/read/by-rating", (req, res) => {
+    const sortbyrating = movies.slice().sort((a, b) => b.rating - a.rating)
+    res.send({
+        status: 200,
+        data: sortbyrating,
+    })
+});
+app.get("/movies/read/by-title", (req, res) => {
+    const sortbytitle = movies.slice().sort((a, b) => {
+        if (a.title < b.title)
+            return -1;
+        if (a.title > b.title)
+            return 1;
+        return 0;
+    });
+    res.send({
+        status: 200,
+        data: sortbytitle,
+    })
+});
 app.listen(3000);
+
