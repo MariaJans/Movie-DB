@@ -58,7 +58,7 @@ app.get("/search", (req, res) => {
 
 //Basics for CRUD
 
-app.get("/movies/create", (req, res) => {
+app.post("/movies/create", (req, res) => {
     res.send("create movies")
 });
 app.get("/movies/read", (req, res) => {
@@ -67,10 +67,10 @@ app.get("/movies/read", (req, res) => {
         data: movies,
     })
 });
-app.get("/movies/update", (req, res) => {
+app.put("/movies/update", (req, res) => {
     res.send("update movies")
 });
-app.get("/movies/delete", (req, res) => {
+app.delete("/movies/delete", (req, res) => {
     res.send("delete movies")
 });
 
@@ -124,7 +124,7 @@ app.get("/movies/read/id/:id(\\d+)", (req, res) => {
 
 //Create
 
-app.get("/movies/add", (req, res) => {
+app.post("/movies/add", (req, res) => {
     const title = req.query.title;
     const year = req.query.year;
     const rating = req.query.rating;
@@ -151,7 +151,7 @@ app.get("/movies/add", (req, res) => {
 
 //Delete
 
-app.get("/movies/delete/:id(\\d+)", (req, res) => {
+app.delete("/movies/delete/:id(\\d+)", (req, res) => {
     if (!movies[req.params.id - 1]) {
         res.send({
             status: 404,
@@ -169,7 +169,7 @@ app.get("/movies/delete/:id(\\d+)", (req, res) => {
 
 //Update
 
-app.get("/movies/update/:id(\\d+)", (req, res) => {
+app.put("/movies/update/:id(\\d+)", (req, res) => {
     let title = req.query.title;
     let year = req.query.year;
     let rating = req.query.rating;
