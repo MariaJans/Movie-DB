@@ -2,7 +2,9 @@ const { response } = require("express");
 const express = require("express");
 const app = express();
 app.use(express.json());
+const verify = require("./verification");
 let mongoose = require("mongoose");
+const verification = require("./verification");
 let router = express.Router();
 let moviesschema = mongoose.Schema({
     title: { type: String, required: true },
@@ -11,69 +13,69 @@ let moviesschema = mongoose.Schema({
 });
 
 let MoviesModel = mongoose.model("Movies", moviesschema);
+
 router.use("/", (req, res, next) => {
     next();
 })
-router.get("/read", (req, res) => {
-    res.send({
-        status: 200,
-        data: movies,
-    })
+router.get("/read", verify, (req, res) => {
+    MoviesModel.find((error, NewMovies) => {
+        if (error) {
+            res.send(error.message)
+        } else {
+            res.status(200).send(NewMovies);
+        }
+    });
 });
 
 router.get("/read/by-date", (req, res) => {
-    const sortbyyear = movies.slice().sort((a, b) => a.year - b.year)
-    res.send({
-        status: 200,
-        data: sortbyyear,
-    })
+    MoviesModel.find((error, NewMovies) => {
+        if (error) {
+            res.send(error.message)
+        } else {
+            res.status(200).send(NewMovies);
+        }
+    }).sort({ "year": 1 });
 });
+
 router.get("/read/by-rating", (req, res) => {
-    const sortbyrating = movies.slice().sort((a, b) => b.rating - a.rating)
-    res.send({
-        status: 200,
-        data: sortbyrating,
-    })
+    MoviesModel.find((error, NewMovies) => {
+        if (error) {
+            res.send(error.message)
+        } else {
+            res.status(200).send(NewMovies);
+        }
+    }).sort({ "rating": -1 });
 });
+
 router.get("/read/by-title", (req, res) => {
-    const sortbytitle = movies.slice().sort((a, b) => {
-        if (a.title < b.title)
-            return -1;
-        if (a.title > b.title)
-            return 1;
-        return 0;
-    });
-    res.send({
-        status: 200,
-        data: sortbytitle,
+    MoviesModel.find((error, NewMovies) => {
+        if (error) {
+            res.send(error.message)
+        } else {
+            res.status(200).send(NewMovies);
+        }
+    }).sort({ "title": 1 })
+});
+
+
+
+router.get("/read/id/:id", (req, res) => {
+    MoviesModel.findById(req.params.id, (error, NewMovies) => {
+        if (error) {
+            res.send(error.message)
+        } else {
+            res.status(200).send(NewMovies);
+        }
     })
 });
 
-//Read one
 
-router.get("/read/id/:id(\\d+)", (req, res) => {
-    if (!movies[req.params.id - 1]) {
-        res.status(404);
-        res.send({
-            status: 404,
-            error: true,
-            message: "The movie " + req.params.id + " does not exist"
-        })
-    } else {
-        res.send({
-            status: 200,
-            data: movies[req.params.id - 1],
-        })
-    }
-});
-
-//Create
 
 router.post("/add", (req, res) => {
     const title = req.query.title;
     const year = req.query.year;
     const rating = req.query.rating;
-    
+
     let NewMovies = new MoviesModel({
         title: title,
         year: year,
@@ -86,57 +88,47 @@ router.post("/add", (req, res) => {
             res.status(200).send(NewMovies);
         }
     });
-
-
-
 });
 
-//Delete
 
-router.delete("/delete/:id(\\d+)", (req, res) => {
-    if (!movies[req.params.id - 1]) {
-        res.send({
-            status: 404,
-            error: true,
-            message: "the movie " + req.params.id + " does not exist"
-        })
-    } else {
-        movies.splice(req.params.id - 1, 1);
-        res.send({
-            status: 200,
-            data: movies,
-        })
-    }
+
+router.delete("/delete/:id", (req, res) => {
+    MoviesModel.findOneAndDelete({ _id: req.params.id }, (error, NewMovies) => {
+        if (error) {
+            res.send(error.message)
+        } else {
+            res.status(200).send(NewMovies);
+        }
+    })
 });
 
-//Update
 
-router.put("/update/:id(\\d+)", (req, res) => {
+router.put("/update/:id", async (req, res) => {
     let title = req.query.title;
     let year = req.query.year;
     let rating = req.query.rating;
-    if (movies[req.params.id - 1]) {
-
+    try {
+        const movie = await MoviesModel.findOne({ _id: req.params.id });
         if (title === undefined || title === "") {
-            title = movies[req.params.id - 1].title;
+            title = movie.title;
+        } else {
+            movie.title = title;
         }
         if (year === undefined || year === "" || !(/^\d{4}$/).test(year)) {
-            year = movies[req.params.id - 1].year;
+            year = movie.year;
+        } else {
+            movie.year = year;
         }
         if (rating === undefined || rating === "") {
-            rating = movies[req.params.id - 1].rating;
+            rating = movie.rating;
+        } else {
+            movie.rating = rating;
         }
-        movies[req.params.id - 1] = { title, year, rating };
-        res.send({
-            status: 200,
-            data: movies,
-        })
-    } else {
-        res.send({
-            status: 500,
-            error: true,
-            message: "The movie " + req.params.id + " does not exist"
-        })
+        await movie.save();
+        const movieslist = await MoviesModel.find();
+        res.status(200).send(movieslist);
+    } catch (err) {
+        res.send(err)
     }
 });
 

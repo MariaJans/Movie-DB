@@ -1,8 +1,10 @@
 const express = require("express");
 const app = express();
 const importmovies = require("./movies");
+const importuser =require("./users")
 app.use(express.json());
 app.use("/movie", importmovies);
+app.use("/user", importuser);
 let mongoose = require("mongoose");
 mongoose.connect("mongodb+srv://MariaJans:123abc123@moviedb.2qvgn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
 
