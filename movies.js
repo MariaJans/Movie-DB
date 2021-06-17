@@ -27,7 +27,7 @@ router.get("/read", verify, (req, res) => {
     });
 });
 
-router.get("/read/by-date", (req, res) => {
+router.get("/read/by-date", verify, (req, res) => {
     MoviesModel.find((error, NewMovies) => {
         if (error) {
             res.send(error.message)
@@ -37,7 +37,7 @@ router.get("/read/by-date", (req, res) => {
     }).sort({ "year": 1 });
 });
 
-router.get("/read/by-rating", (req, res) => {
+router.get("/read/by-rating", verify, (req, res) => {
     MoviesModel.find((error, NewMovies) => {
         if (error) {
             res.send(error.message)
@@ -47,7 +47,7 @@ router.get("/read/by-rating", (req, res) => {
     }).sort({ "rating": -1 });
 });
 
-router.get("/read/by-title", (req, res) => {
+router.get("/read/by-title", verify, (req, res) => {
     MoviesModel.find((error, NewMovies) => {
         if (error) {
             res.send(error.message)
@@ -59,7 +59,7 @@ router.get("/read/by-title", (req, res) => {
 
 
 
-router.get("/read/id/:id", (req, res) => {
+router.get("/read/id/:id", verify, (req, res) => {
     MoviesModel.findById(req.params.id, (error, NewMovies) => {
         if (error) {
             res.send(error.message)
@@ -71,7 +71,7 @@ router.get("/read/id/:id", (req, res) => {
 
 
 
-router.post("/add", (req, res) => {
+router.post("/add", verify, (req, res) => {
     const title = req.query.title;
     const year = req.query.year;
     const rating = req.query.rating;
@@ -92,7 +92,7 @@ router.post("/add", (req, res) => {
 
 
 
-router.delete("/delete/:id", (req, res) => {
+router.delete("/delete/:id", verify, (req, res) => {
     MoviesModel.findOneAndDelete({ _id: req.params.id }, (error, NewMovies) => {
         if (error) {
             res.send(error.message)
@@ -103,7 +103,7 @@ router.delete("/delete/:id", (req, res) => {
 });
 
 
-router.put("/update/:id", async (req, res) => {
+router.put("/update/:id", verify, async (req, res) => {
     let title = req.query.title;
     let year = req.query.year;
     let rating = req.query.rating;
