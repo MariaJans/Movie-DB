@@ -1,5 +1,16 @@
 const express = require("express");
 const app = express();
+const importmovies = require("./movies");
+app.use(express.json());
+app.use("/movie", importmovies);
+let mongoose = require("mongoose");
+mongoose.connect("mongodb+srv://MariaJans:123abc123@moviedb.2qvgn.mongodb.net/myFirstDatabase?retryWrites=true&w=majority");
+
+// gives you a messsage if it is connected
+mongoose.connection.on("connected", () => {
+    console.log("Connected to database")
+})
+
 const movies = [
     { title: 'Jaws', year: 1975, rating: 8 },
     { title: 'Avatar', year: 2009, rating: 7.8 },
@@ -58,9 +69,9 @@ app.get("/search", (req, res) => {
 
 //Basics for CRUD
 
-app.post("/movies/create", (req, res) => {
-    res.send("create movies")
-});
+//app.post("/movies/create", (req, res) => {
+// res.send("create movies")
+//});
 app.get("/movies/read", (req, res) => {
     res.send({
         status: 200,
@@ -128,13 +139,17 @@ app.post("/movies/add", (req, res) => {
     const title = req.query.title;
     const year = req.query.year;
     const rating = req.query.rating;
+    console.log(title);
+    console.log(year);
+    console.log(rating);
+
     if (title === "" || year === "" || isNaN(year) || year.length != 4) {
         res.send({
             status: 403,
             error: true,
             message: "you cannot create a movie without providing a title and a year",
         })
-    } else if (rating === "") {
+    } else if (rating === "" || rating === undefined) {
         movies.push({ title: title, year: year, rating: 4 })
         res.send({
             status: 200,
