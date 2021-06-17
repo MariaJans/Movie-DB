@@ -1,4 +1,3 @@
-//creating a simple server
 const express = require("express");
 const app = express();
 const movies = [
@@ -8,18 +7,20 @@ const movies = [
     { title: 'الإرهاب والكباب‎', year: 1992, rating: 6.2 }
 ]
 
+//creating a simple server
+
 app.get("/", (req, res) => {
     res.send("ok");
-}
-);
+});
+
 //creating simple API
+
 app.get("/test", (req, res) => {
     res.send({
         status: 200,
         message: "ok"
     })
 });
-
 app.get("/time", (req, res) => {
     let date = new Date();
     let hour = date.getHours();
@@ -29,6 +30,9 @@ app.get("/time", (req, res) => {
         message: hour + ":" + minute,
     })
 });
+
+//Complicate the API
+
 app.get("/hello/:id(\\d+)", (req, res) => {
     res.send({
         status: 200,
@@ -52,6 +56,8 @@ app.get("/search", (req, res) => {
     }
 });
 
+//Basics for CRUD
+
 app.get("/movies/create", (req, res) => {
     res.send("create movies")
 });
@@ -67,6 +73,9 @@ app.get("/movies/update", (req, res) => {
 app.get("/movies/delete", (req, res) => {
     res.send("delete movies")
 });
+
+//Search
+
 app.get("/movies/read/by-date", (req, res) => {
     const sortbyyear = movies.slice().sort((a, b) => a.year - b.year)
     res.send({
@@ -94,6 +103,9 @@ app.get("/movies/read/by-title", (req, res) => {
         data: sortbytitle,
     })
 });
+
+//Read one
+
 app.get("/movies/read/id/:id(\\d+)", (req, res) => {
     if (!movies[req.params.id - 1]) {
         res.status(404);
@@ -109,6 +121,9 @@ app.get("/movies/read/id/:id(\\d+)", (req, res) => {
         })
     }
 });
+
+//Create
+
 app.get("/movies/add", (req, res) => {
     const title = req.query.title;
     const year = req.query.year;
@@ -133,6 +148,9 @@ app.get("/movies/add", (req, res) => {
         })
     }
 });
+
+//Delete
+
 app.get("/movies/delete/:id(\\d+)", (req, res) => {
     if (!movies[req.params.id - 1]) {
         res.send({
@@ -145,6 +163,37 @@ app.get("/movies/delete/:id(\\d+)", (req, res) => {
         res.send({
             status: 200,
             data: movies,
+        })
+    }
+});
+
+//Update
+
+app.get("/movies/update/:id(\\d+)", (req, res) => {
+    let title = req.query.title;
+    let year = req.query.year;
+    let rating = req.query.rating;
+    if (movies[req.params.id - 1]) {
+
+        if (title === undefined || title === "") {
+            title = movies[req.params.id - 1].title;
+        }
+        if (year === undefined || year === "" || !(/^\d{4}$/).test(year)) {
+            year = movies[req.params.id - 1].year;
+        }
+        if (rating === undefined || rating === "") {
+            rating = movies[req.params.id - 1].rating;
+        }
+        movies[req.params.id - 1] = { title, year, rating };
+        res.send({
+            status: 200,
+            data: movies,
+        })
+    } else {
+        res.send({
+            status: 500,
+            error: true,
+            message: "The movie " + req.params.id + " does not exist"
         })
     }
 });
